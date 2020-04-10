@@ -54,10 +54,18 @@ def say_hello(**payload):
 				web_client.chat_postMessage(channel = channel_id, text="Enter the District")
 
 		elif(message.startswith('!help')):
-			web_client.chat_postMessage(channel = channel_id, text="Get help")
+			fileManager = open('res/bot_intro.txt', 'r')
+			bot_intro = fileManager.read()
+			fileManager.close()
+			web_client.chat_postMessage(channel = channel_id, text=bot_intro)
 
 		else:
 			web_client.chat_postMessage(channel = channel_id, text="IDK that command, try !help")
+	
+	elif('boomer' in message.lower()):
+		web_client.chat_postMessage(channel = channel_id, text="Wait till I get coded for this :angry:")
 			
 rtm_client = RTMClient(token=getTokens()["slack_bot_token"])
 rtm_client.start()
+
+# TODO : today's total count
