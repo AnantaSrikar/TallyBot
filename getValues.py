@@ -110,3 +110,11 @@ def findState(stateName):
 	else:
 		stateText = '{} not found, check spelling and try again'.format(stateName)
 	return stateText
+
+def findDistrict(districtName):
+	districtText = ''
+	if(districtName in globalData):
+		districtText = 'Values for {}:\n'.format(districtName) + 'Infected : {}\nDead : {}'.format(globalData[districtName]["infected"], globalData[districtName]["dead"])
+	else:
+		districtText = '{} not found, check spelling and try again'.format(districtName)
+	return districtText
