@@ -82,12 +82,12 @@ for boi in stateGlobalData:
 def stateData():
 	stateText = ''
 	for boi in stateGlobalData:
-		stateText += boi + '\nInfected : {}'.format(stateGlobalData[boi]["infected"]) + '\nDead : {}\n'.format(stateGlobalData[boi]["dead"])
+		stateText += boi + '\nInfected : {}'.format(stateGlobalData[boi]["infected"]) + '\nDead : {}\n\n'.format(stateGlobalData[boi]["dead"])
 	return stateText
 
 def districtData():
 	districtText = ''
 	for districtBoi in globalData:
-		districtText += districtBoi + '\nInfected : {}'.format(globalData[districtBoi]["infected"]) + '\nDead : {}\n'.format(globalData[districtBoi]["dead"])
+		districtText += districtBoi + '\nInfected : {}'.format(globalData[districtBoi]["infected"]) + '\nDead : {}\n\n'.format(globalData[districtBoi]["dead"])
 	districtText += "Total infected : {}\n".format(totalSumInfected) + "Total dead : {}".format(totalSumDead)
 	return districtText

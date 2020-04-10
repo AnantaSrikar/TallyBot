@@ -1,6 +1,7 @@
 from slack import RTMClient
 import time
 import json
+import getValues
 
 def getTokens():
 	allTokens = json.load(open('res/TOKENS.json', 'r'))
@@ -24,10 +25,17 @@ def say_hello(**payload):
 		user = data['user']
 	except:
 		pass
-	if(message.startswith('Hi') and user != ''):
-		web_client.chat_postMessage(channel = channel_id, text=f"Hi <@{user}>!")
-	elif(message.startswith('!')):
-		web_client.chat_postMessage(channel = channel_id, text=f"You have entered a command! Awesome!")
 
+	if(message.startswith('!')):
+		if(message.startswith('!start')):
+			web_client.chat_postMessage(channel = channel_id, text=f"Hi <@{user}>! I'm still awake!")
+		elif(message.startswith('!districtData')):
+			web_client.chat_postMessage(channel = channel_id, text="Here's the district-wise tally :\n{}".format(getValues.districtData()))
+		elif(message.startswith('!stateData')):
+			web_client.chat_postMessage(channel = channel_id, text="Here's the state-wise tally :\n{}".format(getValues.stateData()))
+		elif(message.startswith('!help')):
+			web_client.chat_postMessage(channel = channel_id, text="Get help")
+		else:
+			web_client.chat_postMessage(channel = channel_id, text="IDK that command, try !help")
 rtm_client = RTMClient(token=getTokens()["slack_bot_token"])
 rtm_client.start()
