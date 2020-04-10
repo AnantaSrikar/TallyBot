@@ -1,0 +1,3 @@
+slackclient
+oauth2client
+gspread
