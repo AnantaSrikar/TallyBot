@@ -47,8 +47,7 @@ def say_hello(**payload):
 				web_client.chat_postMessage(channel = channel_id, text="Enter the State")
 
 		elif(message.startswith('!findDist')):
-			districtName = message[14:]
-			print("District name : '{}'".format(districtName))
+			districtName = message[10:]
 			if(len(districtName) > 0):
 				web_client.chat_postMessage(channel = channel_id, text=getValues.findDistrict(districtName))
 			else:
