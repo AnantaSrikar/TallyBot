@@ -1,5 +1,6 @@
 import gspread
 import json
+import requests
 from oauth2client.service_account import ServiceAccountCredentials
 
 def getTokens():
@@ -83,6 +84,7 @@ def stateData():
 	stateText = ''
 	for boi in stateGlobalData:
 		stateText += boi + '\nInfected : {}'.format(stateGlobalData[boi]["infected"]) + '\nDead : {}\n\n'.format(stateGlobalData[boi]["dead"])
+	stateText += "Total infected : {}\n".format(totalSumInfected) + "Total dead : {}".format(totalSumDead)
 	return stateText
 
 def districtData():
@@ -91,3 +93,12 @@ def districtData():
 		districtText += districtBoi + '\nInfected : {}'.format(globalData[districtBoi]["infected"]) + '\nDead : {}\n\n'.format(globalData[districtBoi]["dead"])
 	districtText += "Total infected : {}\n".format(totalSumInfected) + "Total dead : {}".format(totalSumDead)
 	return districtText
+
+
+def apiDistrictData():
+	disritctAPIdata = requests.get(getTokens()["district_api_url"]).json()
+	apiDataText = ''
+	for districtBoi in disritctAPIdata:
+		apiDataText += districtBoi + '\nInfected : {}'.format(disritctAPIdata[districtBoi]['infected']) + '\nDead : {}\n\n'.format(disritctAPIdata[districtBoi]['dead'])
+	apiDataText += "Total infected : {}\n".format(totalSumInfected) + "Total dead : {}".format(totalSumDead)
+	return apiDataText

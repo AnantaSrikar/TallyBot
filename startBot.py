@@ -33,6 +33,8 @@ def say_hello(**payload):
 			web_client.chat_postMessage(channel = channel_id, text="Here's the district-wise tally :\n{}".format(getValues.districtData()))
 		elif(message.startswith('!stateData')):
 			web_client.chat_postMessage(channel = channel_id, text="Here's the state-wise tally :\n{}".format(getValues.stateData()))
+		elif(message.startswith('!apiData')):
+			web_client.chat_postMessage(channel = channel_id, text="Here's the API data :\n{}".format(getValues.apiDistrictData()))
 		elif(message.startswith('!help')):
 			web_client.chat_postMessage(channel = channel_id, text="Get help")
 		else:
