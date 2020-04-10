@@ -102,3 +102,11 @@ def apiDistrictData():
 		apiDataText += districtBoi + '\nInfected : {}'.format(disritctAPIdata[districtBoi]['infected']) + '\nDead : {}\n\n'.format(disritctAPIdata[districtBoi]['dead'])
 	apiDataText += "Total infected : {}\n".format(totalSumInfected) + "Total dead : {}".format(totalSumDead)
 	return apiDataText
+
+def findState(stateName):
+	stateText = ''
+	if(stateName in stateGlobalData):
+		stateText = 'Values for {}:\n'.format(stateName) + 'Infected : {}\nDead : {}'.format(stateGlobalData[stateName]["infected"], stateGlobalData[stateName]["dead"])
+	else:
+		stateText = '{} not found, check spelling and try again'.format(stateName)
+	return stateText
