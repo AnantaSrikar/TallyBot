@@ -20,7 +20,12 @@ totalSumInfected = 0
 rowCount = False
 rowNum = 1
 def reloadData():
+	global rowCount
+	global rowNum
+	global totalSumDead
+	global totalSumInfected
 	for row in sheet.get():   #sheet.get the whole document as a dictionary of dictionaries	
+
 		if not rowCount:
 			rowCount = not rowCount
 			continue
