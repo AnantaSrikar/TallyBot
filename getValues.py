@@ -24,6 +24,14 @@ def reloadData():
 	global rowNum
 	global totalSumDead
 	global totalSumInfected
+	global globalData
+	global stateGlobalData
+	rowCount = False
+	rowNum = 1
+	totalSumDead = 0
+	totalSumInfected = 0
+	globalData = {}
+	stateGlobalData = {}
 	for row in sheet.get():   #sheet.get the whole document as a dictionary of dictionaries	
 
 		if not rowCount:
