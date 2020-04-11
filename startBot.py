@@ -28,7 +28,7 @@ def say_hello(**payload):
 
 	if(message.startswith('!')):
 		if(message.startswith('!start')):
-			web_client.chat_postMessage(channel = channel_id, text=f"Hi <@{user}>! I'm still awake!")
+			web_client.chat_postMessage(channel = channel_id, text="Hi <@{}>! I'm still awake!".format(user))
 
 		elif(message.startswith('!districtData')):
 			web_client.chat_postMessage(channel = channel_id, text="Here's the district-wise tally :\n{}".format(getValues.districtData()))
@@ -52,6 +52,13 @@ def say_hello(**payload):
 				web_client.chat_postMessage(channel = channel_id, text=getValues.findDistrict(districtName))
 			else:
 				web_client.chat_postMessage(channel = channel_id, text="Enter the District")
+		
+		elif(message.startswith('!stateDists')):
+			stateName = message[12:]
+			if(len(stateName) > 0):
+				web_client.chat_postMessage(channel = channel_id, text=getValues.stateDists(stateName))
+			else:
+				web_client.chat_postMessage(channel = channel_id, text="Enter the State")
 
 		elif(message.startswith('!help')):
 			fileManager = open('res/bot_intro.txt', 'r')

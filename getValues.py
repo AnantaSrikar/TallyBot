@@ -96,10 +96,10 @@ def districtData():
 
 
 def apiDistrictData():
-	disritctAPIdata = requests.get(getTokens()["district_api_url"]).json()
+	districtAPIdata = requests.get(getTokens()["district_api_url"]).json()
 	apiDataText = ''
-	for districtBoi in disritctAPIdata:
-		apiDataText += districtBoi + '\nInfected : {}'.format(disritctAPIdata[districtBoi]['infected']) + '\nDead : {}\n\n'.format(disritctAPIdata[districtBoi]['dead'])
+	for districtBoi in districtAPIdata:
+		apiDataText += districtBoi + '\nInfected : {}'.format(districtAPIdata[districtBoi]['infected']) + '\nDead : {}\n\n'.format(districtAPIdata[districtBoi]['dead'])
 	apiDataText += "Total infected : {}\n".format(totalSumInfected) + "Total dead : {}".format(totalSumDead)
 	return apiDataText
 
@@ -118,3 +118,18 @@ def findDistrict(districtName):
 	else:
 		districtText = '{} not found, check spelling and try again'.format(districtName)
 	return districtText
+
+def stateDists(stateName):
+	found = False
+	stateDistrictsText = 'Districts with numbers in {}:\n'.format(stateName)
+	districtAPIdata = requests.get(getTokens()["district_api_url"]).json()
+	print(districtAPIdata)
+	for districtBoi in districtAPIdata:
+		if(stateName == districtAPIdata[districtBoi]["state"]):
+			stateDistrictsText += districtBoi +':\nInfected : {}\nDead : {}\n\n'.format(districtAPIdata[districtBoi]["infected"], districtAPIdata[districtBoi]["dead"])
+			if(not found):
+				found = not found
+	if(found):
+		return stateDistrictsText
+	
+	return "Found nothing for {}".format(stateName)
