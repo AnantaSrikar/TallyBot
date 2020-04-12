@@ -15,6 +15,7 @@ sheet = client.open_by_url(getTokens()["sheet_url"]).worksheet('Sheet1')
 # DON'T EDIT ANYTHING ABOVE THIS!!
 globalData = {} # dictionary that will have all the district wise dictionary
 stateGlobalData = {} # dictionary that will have all the state wise dictionary
+distNAtracker = {}
 totalSumDead = 0
 totalSumInfected = 0
 rowCount = False
@@ -26,13 +27,15 @@ def reloadData():
 	global totalSumInfected
 	global globalData
 	global stateGlobalData
+	global distNAtracker
 	rowCount = False
 	rowNum = 1
 	totalSumDead = 0
 	totalSumInfected = 0
 	globalData = {}
 	stateGlobalData = {}
-	for row in sheet.get():   #sheet.get the whole document as a dictionary of dictionaries	
+	distNAtracker = {}
+	for row in sheet.get():   #sheet.get the whole document as a list of lists
 
 		if not rowCount:
 			rowCount = not rowCount
@@ -87,6 +90,30 @@ def reloadData():
 				stateGlobalData[stateBoi]["dead"] = int(row[5])
 			except:
 				stateGlobalData[stateBoi]["dead"] = 0
+		
+		if(districtBoi == 'DIST_NA'):
+			if stateBoi in distNAtracker:
+				try:
+					distNAtracker[stateBoi]["infected"] += int(row[4])
+				except:
+					pass
+
+				try:
+					distNAtracker[stateBoi]["dead"] += int(row[5])
+				except:
+					pass
+			
+			else:
+				distNAtracker[stateBoi] = {}
+				try:
+					distNAtracker[stateBoi]["infected"] = int(row[4])
+				except:
+					distNAtracker[stateBoi]["infected"] = 0
+
+				try:
+					distNAtracker[stateBoi]["dead"] = int(row[5])
+				except:
+					distNAtracker[stateBoi]["dead"] = 0
 		
 		rowNum += 1
 
@@ -153,3 +180,16 @@ def stateDists(stateName):
 		return stateDistrictsText
 	
 	return "Found nothing for {}".format(stateName)
+
+def distNAState(stateName):
+	reloadData()
+	found = False
+	text = 'DIST_NAs in {} :\n'.format(stateName)
+	if(stateName in distNAtracker):
+		text += 'infected : {}\nDeath : {}'.format(distNAtracker[stateName]["infected"], distNAtracker[stateName]["dead"])
+		if(not found):
+			found = not found
+	if(found):
+		return text
+	
+	return "Good news! No DIST_NA for {}".format(stateName)
