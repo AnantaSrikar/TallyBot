@@ -13,9 +13,7 @@ client = gspread.authorize(creds)
 sheet = client.open_by_url(getTokens()["sheet_url"]).worksheet('Sheet1')
 
 # DON'T EDIT ANYTHING ABOVE THIS!!
-globalData = {} # dictionary that will have all the district wise dictionary
-stateGlobalData = {} # dictionary that will have all the state wise dictionary
-distNAtracker = {}
+totalData = {} # has all the data
 totalSumDead = 0
 totalSumInfected = 0
 rowCount = False
@@ -25,16 +23,12 @@ def reloadData():
 	global rowNum
 	global totalSumDead
 	global totalSumInfected
-	global globalData
-	global stateGlobalData
-	global distNAtracker
+	global totalData
 	rowCount = False
 	rowNum = 1
 	totalSumDead = 0
 	totalSumInfected = 0
-	globalData = {}
-	stateGlobalData = {}
-	distNAtracker = {}
+	totalData = {}
 	for row in sheet.get():   #sheet.get the whole document as a list of lists
 
 		if not rowCount:
@@ -46,95 +40,68 @@ def reloadData():
 		except Exception as e:
 			print('Exception at {}, error : {}'.format(rowNum, e))
 
-		if districtBoi in globalData:
-			try:
-				globalData[districtBoi]["infected"] += int(row[4])
-			except:
-				pass
-
-			try:
-				globalData[districtBoi]["dead"] += int(row[5])
-			except:
-				pass
-		else:
-			globalData[districtBoi] = {}
-			try:
-				globalData[districtBoi]["infected"] = int(row[4])
-			except:
-				globalData[districtBoi]["infected"] = 0
-
-			try:
-				globalData[districtBoi]["dead"] = int(row[5])
-			except:
-				globalData[districtBoi]["dead"] = 0
-
-		if stateBoi in stateGlobalData:
-			try:
-				stateGlobalData[stateBoi]["infected"] += int(row[4])
-			except:
-				pass
-
-			try:
-				stateGlobalData[stateBoi]["dead"] += int(row[5])
-			except:
-				pass
-		else:
-			stateGlobalData[stateBoi] = {}
-			try:
-				stateGlobalData[stateBoi]["infected"] = int(row[4])
-				
-			except:
-				stateGlobalData[stateBoi]["infected"] = 0
-
-			try:
-				stateGlobalData[stateBoi]["dead"] = int(row[5])
-			except:
-				stateGlobalData[stateBoi]["dead"] = 0
-		
-		if(districtBoi == 'DIST_NA'):
-			if stateBoi in distNAtracker:
+		if stateBoi in totalData:
+			if districtBoi in totalData[stateBoi]:
 				try:
-					distNAtracker[stateBoi]["infected"] += int(row[4])
+					totalData[stateBoi][districtBoi]["infected"] += int(row[4])
 				except:
 					pass
 
 				try:
-					distNAtracker[stateBoi]["dead"] += int(row[5])
+					totalData[stateBoi][districtBoi]["dead"] += int(row[5])
 				except:
 					pass
 			
 			else:
-				distNAtracker[stateBoi] = {}
+				totalData[stateBoi][districtBoi] = {}
 				try:
-					distNAtracker[stateBoi]["infected"] = int(row[4])
+					totalData[stateBoi][districtBoi]["infected"] = int(row[4])
 				except:
-					distNAtracker[stateBoi]["infected"] = 0
+					totalData[stateBoi][districtBoi]["infected"] = 0
 
 				try:
-					distNAtracker[stateBoi]["dead"] = int(row[5])
+					totalData[stateBoi][districtBoi]["dead"] = int(row[5])
 				except:
-					distNAtracker[stateBoi]["dead"] = 0
+					totalData[stateBoi][districtBoi]["dead"] = 0
 		
+		else:
+			totalData[stateBoi] = {}
+			totalData[stateBoi][districtBoi] = {}
+			try:
+				totalData[stateBoi][districtBoi]["infected"] = int(row[4])
+			except:
+				totalData[stateBoi][districtBoi]["infected"] = 0
+
+			try:
+				totalData[stateBoi][districtBoi]["dead"] = int(row[5])
+			except:
+				totalData[stateBoi][districtBoi]["dead"] = 0		
 		rowNum += 1
 
-	for boi in stateGlobalData:
-		totalSumInfected += stateGlobalData[boi]["infected"]
-		totalSumDead += stateGlobalData[boi]["dead"]
+	for boi in totalData:
+		for distBoi in totalData[boi]:
+			totalSumInfected += totalData[boi][distBoi]["infected"]
+			totalSumDead += totalData[boi][distBoi]["dead"]
 
 def stateData():
 	reloadData()
 	stateText = ''
-	for boi in stateGlobalData:
-		stateText += boi + '\nInfected : {}'.format(stateGlobalData[boi]["infected"]) + '\nDead : {}\n\n'.format(stateGlobalData[boi]["dead"])
-	stateText += "Total infected : {}\n".format(totalSumInfected) + "Total dead : {}".format(totalSumDead)
+	for stateBoi in totalData:
+		infectedStateSum = 0
+		deadStateSum = 0
+		for districtBoi in totalData[stateBoi]:
+			infectedStateSum += totalData[stateBoi][districtBoi]["infected"]
+			deadStateSum += totalData[stateBoi][districtBoi]["dead"]
+		stateText += stateBoi +'\nInfected : {}'.format(infectedStateSum) + '\nDead : {}\n\n'.format(deadStateSum)
 	return stateText
 
 def districtData():
 	reloadData()
 	districtText = ''
-	for districtBoi in globalData:
-		districtText += districtBoi + '\nInfected : {}'.format(globalData[districtBoi]["infected"]) + '\nDead : {}\n\n'.format(globalData[districtBoi]["dead"])
-	districtText += "Total infected : {}\n".format(totalSumInfected) + "Total dead : {}".format(totalSumDead)
+	for stateBoi in totalData:
+		districtText += '{} :\n'.format(stateBoi)
+		for distBoi in totalData[stateBoi]:
+			districtText += distBoi + ':\nInfected : {}'.format(totalData[stateBoi][distBoi]["infected"]) + '\nDead : {}\n\n'.format(totalData[stateBoi][distBoi]["dead"])
 	return districtText
 
 
@@ -150,46 +117,39 @@ def apiDistrictData():
 def findState(stateName):
 	reloadData()
 	stateText = ''
-	if(stateName in stateGlobalData):
-		stateText = 'Values for {}:\n'.format(stateName) + 'Infected : {}\nDead : {}'.format(stateGlobalData[stateName]["infected"], stateGlobalData[stateName]["dead"])
-	else:
-		stateText = '{} not found, check spelling and try again'.format(stateName)
-	return stateText
+	if stateName in totalData:
+		infectedStateSum = 0
+		deadStateSum = 0
+		for districtBoi in totalData[stateName]:
+			infectedStateSum += totalData[stateName][districtBoi]["infected"]
+			deadStateSum += totalData[stateName][districtBoi]["dead"]
+		stateText = 'Values for {}:\n'.format(stateName) + 'Infected : {}\nDead : {}'.format(infectedStateSum, deadStateSum)
+		return stateText
+	return('{} not found, check spelling and try again'.format(stateName))
 
 def findDistrict(districtName):
 	reloadData()
 	districtText = ''
-	if(districtName in globalData):
-		districtText = 'Values for {}:\n'.format(districtName) + 'Infected : {}\nDead : {}'.format(globalData[districtName]["infected"], globalData[districtName]["dead"])
-	else:
-		districtText = '{} not found, check spelling and try again'.format(districtName)
-	return districtText
+	for stateBoi in totalData:
+		if districtName in totalData[stateBoi]:
+			districtText = 'Values for {}:\n'.format(districtName) + ':\nInfected : {}'.format(totalData[stateBoi][districtName]["infected"]) + '\nDead : {}'.format(totalData[stateBoi][districtName]["dead"])
+			return districtText
+	return('{} not found, check spelling and try again'.format(districtName))
 
 def stateDists(stateName):
 	reloadData()
-	found = False
 	stateDistrictsText = 'Districts with numbers in {}:\n'.format(stateName)
-	districtAPIdata = requests.get(getTokens()["district_api_url"]).json()
-	print(districtAPIdata)
-	for districtBoi in districtAPIdata:
-		if(stateName == districtAPIdata[districtBoi]["state"]):
-			stateDistrictsText += districtBoi +':\nInfected : {}\nDead : {}\n\n'.format(districtAPIdata[districtBoi]["infected"], districtAPIdata[districtBoi]["dead"])
-			if(not found):
-				found = not found
-	if(found):
+	if stateName in totalData:
+		for districtBoi in totalData[stateName]:
+			stateDistrictsText += districtBoi +':\nInfected : {}\nDead : {}\n\n'.format(totalData[stateName][districtBoi]["infected"], totalData[stateName][districtBoi]["dead"])
 		return stateDistrictsText
-	
 	return "Found nothing for {}".format(stateName)
 
-def distNAState(stateName):
+def distNAstate(stateName):
 	reloadData()
-	found = False
 	text = 'DIST_NAs in {} :\n'.format(stateName)
-	if(stateName in distNAtracker):
-		text += 'infected : {}\nDeath : {}'.format(distNAtracker[stateName]["infected"], distNAtracker[stateName]["dead"])
-		if(not found):
-			found = not found
-	if(found):
+	if(stateName in totalData):
+		if("DIST_NA" in totalData[stateName]):
+			text += 'Infected : {}\nDeath : {}'.format(totalData[stateName]['DIST_NA']["infected"], totalData[stateName]['DIST_NA']["dead"])
 		return text
-	
 	return "Good news! No DIST_NA for {}".format(stateName)
