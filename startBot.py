@@ -66,6 +66,9 @@ def say_hello(**payload):
 				web_client.chat_postMessage(channel = channel_id, text=getValues.distNAstate(stateName))
 			else:
 				web_client.chat_postMessage(channel = channel_id, text="Enter the State")
+		
+		elif(message.startswith('!todaysData')):
+			web_client.chat_postMessage(channel = channel_id, text=getValues.getTodaysData())
 			
 		elif(message.startswith('!help')):
 			fileManager = open('res/bot_intro.txt', 'r')

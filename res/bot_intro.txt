@@ -11,5 +11,6 @@ Below are few of the commands you can use:
 `!findDist districtName` : Get the values of a specific district
 `!stateDists stateName` : Get the values of all districts in a state
 `!distNAstate stateName` : Get the DIST_NA for a state
+`!todaysData` : Get today's updates
 
 NOTE : Don't even dare to say ok boomer

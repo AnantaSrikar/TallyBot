@@ -1,11 +1,15 @@
 import gspread
 import json
 import requests
+from datetime import datetime
 from oauth2client.service_account import ServiceAccountCredentials
 
 def getTokens():
 	allTokens = json.load(open('res/TOKENS.json', 'r'))
 	return allTokens
+
+def getDate():
+	return datetime.now().strftime('%d/%m/20%y')
 
 scope = ['https://spreadsheets.google.com/feeds']
 creds = ServiceAccountCredentials.from_json_keyfile_name('res/credentials.json',scope)
@@ -14,6 +18,7 @@ sheet = client.open_by_url(getTokens()["sheet_url"]).worksheet('Sheet1')
 
 # DON'T EDIT ANYTHING ABOVE THIS!!
 totalData = {} # has all the data
+todaysData = {}
 totalSumDead = 0
 totalSumInfected = 0
 rowCount = False
@@ -24,11 +29,13 @@ def reloadData():
 	global totalSumDead
 	global totalSumInfected
 	global totalData
+	global todaysData
 	rowCount = False
 	rowNum = 1
 	totalSumDead = 0
 	totalSumInfected = 0
 	totalData = {}
+	todaysData = {}
 	for row in sheet.get():   #sheet.get the whole document as a list of lists
 
 		if not rowCount:
@@ -37,6 +44,7 @@ def reloadData():
 		try:
 			districtBoi = row[3]
 			stateBoi = row[2]
+			dateBoi = row[0]
 		except Exception as e:
 			print('Exception at {}, error : {}'.format(rowNum, e))
 
@@ -75,7 +83,46 @@ def reloadData():
 			try:
 				totalData[stateBoi][districtBoi]["dead"] = int(row[5])
 			except:
-				totalData[stateBoi][districtBoi]["dead"] = 0		
+				totalData[stateBoi][districtBoi]["dead"] = 0
+		
+		if(dateBoi == getDate()):
+			if stateBoi in todaysData:
+				if districtBoi in todaysData[stateBoi]:
+					try:
+						todaysData[stateBoi][districtBoi]["infected"] += int(row[4])
+					except:
+						pass
+
+					try:
+						todaysData[stateBoi][districtBoi]["dead"] += int(row[5])
+					except:
+						pass
+
+				else:
+					todaysData[stateBoi][districtBoi] = {}
+					try:
+						todaysData[stateBoi][districtBoi]["infected"] = int(row[4])
+					except:
+						todaysData[stateBoi][districtBoi]["infected"] = 0
+					
+					try:
+						todaysData[stateBoi][districtBoi]["dead"] = int(row[5])
+					except:
+						todaysData[stateBoi][districtBoi]["dead"] = 0
+			
+			else:
+				todaysData[stateBoi] = {}
+				todaysData[stateBoi][districtBoi] = {}
+				try:
+					todaysData[stateBoi][districtBoi]["infected"] = int(row[4])
+				except:
+					todaysData[stateBoi][districtBoi]["infected"] = 0
+
+				try:
+					todaysData[stateBoi][districtBoi]["dead"] = int(row[5])
+				except:
+					todaysData[stateBoi][districtBoi]["dead"] = 0
+		
 		rowNum += 1
 
 	for boi in totalData:
@@ -153,3 +200,14 @@ def distNAstate(stateName):
 			text += 'Infected : {}\nDeath : {}'.format(totalData[stateName]['DIST_NA']["infected"], totalData[stateName]['DIST_NA']["dead"])
 		return text
 	return "Good news! No DIST_NA for {}".format(stateName)
+
+def getTodaysData():
+	reloadData()
+	text = ''
+	for stateBoi in todaysData:
+		text += 'In state {}:\n'.format(stateBoi)
+		for districtBoi in todaysData[stateBoi]:
+			text += '{} :\nInfected : {}\nDead : {}\n\n'.format(districtBoi, todaysData[stateBoi][districtBoi]["infected"], todaysData[stateBoi][districtBoi]["dead"])
+	if(text != ''):
+		return text
+	return 'Nothing entered for today'
