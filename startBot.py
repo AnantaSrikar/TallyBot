@@ -60,6 +60,9 @@ def say_hello(**payload):
 			else:
 				web_client.chat_postMessage(channel = channel_id, text="Enter the State")
 
+		elif(message.startswith('!distNAtot')):
+			web_client.chat_postMessage(channel_id = channel_id, text=getValues.totDistNA())
+
 		elif(message.startswith('!distNAstate')):
 			stateName = message[13:]
 			if(len(stateName) > 0):

@@ -192,6 +192,19 @@ def stateDists(stateName):
 		return stateDistrictsText
 	return "Found nothing for {}".format(stateName)
 
+def totDistNA():
+	reloadData()
+	distNAinfected = 0
+	distNAdead = 0
+	for stateBoi in totalData:
+		for districtBoi in totalData[stateBoi]:
+			if(districtBoi == 'DIST_NA'):
+				distNAinfected += totalData[stateBoi][districtBoi]["infected"]
+				distNAdead += totalData[stateBoi][districtBoi]["dead"]
+	if(distNAdead != 0 and distNAinfected != 0):
+		return 'Total DIST_NA count :\nInfected : {}\nDead : {}'.format(distNAinfected, distNAdead)
+	return 'Good News, ALL DIST_NA CLEARED!!! Party time'
+
 def distNAstate(stateName):
 	reloadData()
 	text = 'DIST_NAs in {} :\n'.format(stateName)
