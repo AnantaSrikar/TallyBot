@@ -211,7 +211,7 @@ def distNAstate(stateName):
 	if(stateName in totalData):
 		if("DIST_NA" in totalData[stateName]):
 			text += 'Infected : {}\nDeath : {}'.format(totalData[stateName]['DIST_NA']["infected"], totalData[stateName]['DIST_NA']["dead"])
-		return text
+			return text
 	return "Good news! No DIST_NA for {}".format(stateName)
 
 def getTodaysData():
